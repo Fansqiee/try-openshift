@@ -2,9 +2,10 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "megumismine/kelompok5-django:${env.BUILD_NUMBER}"
+        DOCKER_IMAGE = "megumismine/kelompok5-django:latest"
         PROJECT_DIR = 'Challenge/kelompok5'
         MANIFEST_FILE = '.deployment/kelompok5-django.yml'
+        
     }
     
     stages {
@@ -18,7 +19,7 @@ pipeline {
         stage ('Build Docker Image') {
             steps {
                 dir ("${PROJECT_DIR}") {
-                    sh "docker build -t ${DOCKER_IMAGE} ."
+                    sh "DOCKER_BUILDKIT=0 docker build -t ${DOCKER_IMAGE} ."
                 }
             }
         }

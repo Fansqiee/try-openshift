@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = "megumismine/kelompok5-django:latest"
         PROJECT_DIR = 'Challenge/kelompok5'
-        MANIFEST_FILE = '.deployment/kelompok5-django.yml'
+        MANIFEST_FILE = 'deployment/kelompok5-django.yml'
         
     }
     
@@ -54,13 +54,15 @@ pipeline {
 
         stage ('Apply ke OpenShift'){
             steps {
-                script {
+                dir ("${PROJECT_DIR}") {
+                    script {
                     withCredentials([string(credentialsId: 'OC_LOGIN_TOKEN', variable: 'OC_TOKEN')]){
                         sh """
                         oc login --token=$OC_TOKEN --server=https://api.rm1.0a51.p1.openshiftapps.com:6443
                         oc apply -f ${env.MANIFEST_FILE}
                         oc logout
                         """
+                        }
                     }
                 }
             }

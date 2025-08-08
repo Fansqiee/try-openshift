@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = "megumismine/kelompok5-django:latest"
         PROJECT_DIR = 'Challenge/kelompok5'
-        MANIFEST_FILE = 'deployment/kelompok5-django.yml'
+        MANIFEST_FILE = '.deployment/kelompok5-django.yml'
         
     }
     

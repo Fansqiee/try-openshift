@@ -3,8 +3,8 @@ def CLUSTERS = [
   [name: 'AFFAN',   tokenId: 'OC_LOGIN_TOKEN',  serverId: 'OC_SERVER_AFFAN',   project: 'megumismine-dev'],
   [name: 'AZA',     tokenId: 'OC_AZA',          serverId: 'OC_SERVER_AZA',     project: 'muchaquila-dev'],
   [name: 'WINANDA', tokenId: 'OC_WINANDA',      serverId: 'OC_SERVER_WINANDA', project: 'winandagreaceas-dev'],
-  [name: 'HELMI',   tokenId: 'OC_HELMI',        serverId: 'OC_SERVER_HELMI',   project: 'helmi-dev'],
-  [name: 'NIFE',    tokenId: 'OC_NIFE',         serverId: 'OC_SERVER_NIFE',    project: 'nife-dev'],
+  [name: 'HELMI',   tokenId: 'OC_HELMI',        serverId: 'OC_SERVER_HELMI',   project: 'helmiadamy-dev'],
+  [name: 'NIFE',    tokenId: 'OC_NIFE',         serverId: 'OC_SERVER_NIFE',    project: 'nifesriantozebua-dev'],
 ]
 // ------------------------------------------------------
 

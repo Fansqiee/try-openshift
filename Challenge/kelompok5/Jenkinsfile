@@ -67,7 +67,11 @@ pipeline {
                         sh """
                         oc login --token=$OC_TOKEN --server={cluster.server}
                         oc apply -f ${env.MANIFEST_FILE}
-                        oc get route django
+                        def routeHost = sh(
+                            script: "oc get route django -o jsonpath='{.spec.host}'",
+                            returnStdout: true
+                        ).trim()
+                        routes[cluster.name] = routeHost
                         """
                         }
                     }

@@ -1,0 +1,111 @@
+/* Cute interactive UI — pure CSS */
+:root{
+  --bg: #0b1020;
+  --bg-soft: #111733;
+  --text: #e7ecff;
+  --muted: #aab3d9;
+  --primary: #7c9cff;
+  --primary-2: #9b7cff;
+  --card: #0f1530;
+  --shadow: 0 20px 40px rgba(0,0,0,.35);
+}
+:root.light{
+  --bg:#f6f8ff;
+  --bg-soft:#eef1ff;
+  --text:#0d1230;
+  --muted:#566086;
+  --primary:#4c6fff;
+  --primary-2:#8b5cf6;
+  --card:#ffffff;
+  --shadow:0 14px 28px rgba(20, 32, 80, .15);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:
+  radial-gradient(1000px 600px at 10% -10%, rgba(124,156,255,.15), transparent 60%),
+  radial-gradient(900px 600px at 110% 0%, rgba(155,124,246,.15), transparent 60%),
+  linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%);
+  color:var(--text);
+  font:16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+}
+.page{min-height:100%; display:flex; flex-direction:column; gap:28px}
+.container{width:min(1080px, 92%); margin-inline:auto}
+header{display:flex; align-items:center; justify-content:space-between; padding:24px 0}
+.brand{display:flex; gap:16px; align-items:center}
+.logo{
+  width:44px; height:44px; border-radius:12px;
+  display:grid; place-items:center; font-weight:800;
+  background:linear-gradient(135deg, var(--primary), var(--primary-2));
+  color:white; box-shadow:var(--shadow);
+}
+.titles h1{margin:0; font-size:clamp(22px, 3vw, 32px)}
+.subtitle{margin:4px 0 0; color:var(--muted)}
+.highlight{background:linear-gradient(135deg,var(--primary),var(--primary-2)); -webkit-background-clip:text; background-clip:text; color:transparent}
+
+.card{
+  background:var(--card);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:20px; padding:24px;
+  box-shadow:var(--shadow);
+}
+.card.hero{position:relative; overflow:hidden}
+.card.mini{min-height:130px}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0,1fr));
+  gap:16px;
+}
+@media (max-width: 800px){
+  .grid{grid-template-columns:1fr}
+}
+
+.actions{margin-top:16px; display:flex; flex-wrap:wrap; gap:12px; align-items:center}
+.btn{
+  appearance:none; border:1px solid transparent;
+  background:var(--bg-soft); color:var(--text);
+  padding:10px 14px; border-radius:12px; cursor:pointer;
+  transition:.2s transform ease, .2s box-shadow ease, .2s background ease;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0)}
+.btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary-2)); color:#fff}
+.btn.outline{background:transparent; border-color:rgba(255,255,255,.18)}
+.btn.ghost{background:transparent}
+.badge{
+  margin-left:6px; padding:2px 8px; border-radius:999px;
+  background:rgba(255,255,255,.12);
+}
+
+.msg{font-weight:600; margin:8px 0 0}
+.muted{color:var(--muted); margin:0}
+.footer{padding:20px 0 40px; color:var(--muted); text-align:center}
+
+#typed{font-size:clamp(18px, 2.2vw, 24px); margin:0 0 6px 0}
+
+/* Tilt effect */
+.tilt{transform-style:preserve-3d; perspective:800px}
+.tilt:hover{transform:rotateX(1deg) rotateY(-1deg)}
+.tilt:focus-visible{outline:2px solid var(--primary)}
+
+/* Floating decorations */
+.floaters{
+  position:fixed; inset:0; pointer-events:none;
+  display:grid; place-items:center; opacity:.6; z-index:-1;
+}
+.floaters span{
+  position:absolute; font-size:clamp(18px, 6vw, 38px);
+  animation: drift 18s infinite linear;
+}
+.floaters span:nth-child(1){top:10%; left:8%}
+.floaters span:nth-child(2){top:20%; right:10%}
+.floaters span:nth-child(3){bottom:15%; left:12%}
+.floaters span:nth-child(4){bottom:8%; right:8%}
+.floaters span:nth-child(5){top:50%; left:45%}
+@keyframes drift{0%{transform:translateY(0)}50%{transform:translateY(-18px)}100%{transform:translateY(0)}}
+
+/* Confetti canvas */
+#confetti{
+  position:absolute; inset:0; width:100%; height:100%;
+  pointer-events:none;
+}

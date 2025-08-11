@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ title|default:"Kelompok 5 — Demo Interaktif" }}</title>
+  <meta name="description" content="Halaman lucu & interaktif untuk proyek Django kamu." />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>✨</text></svg>">
+</head>
+<body>
+  <div id="app" class="page">
+    <!-- Floating emojis for playful vibe -->
+    <div class="floaters" aria-hidden="true">
+      <span>✨</span><span>🌈</span><span>🍀</span><span>🌟</span><span>💫</span>
+    </div>
+
+    <header class="container">
+      <div class="brand">
+        <div class="logo">EZ</div>
+        <div class="titles">
+          <h1>Halo, <span class="highlight">Teman-Teman Tersayang</span> 👋</h1>
+          <p class="subtitle">UBUR-UBUR IKAN LELE KEREN NGAAA LEEE!!!!.</p>
+        </div>
+      </div>
+      <button id="themeToggle" class="btn ghost" aria-label="Ubah tema">🌓</button>
+    </header>
+
+    <main class="container">
+      <section class="card hero tilt" tabindex="0">
+        <h2 id="typed"></h2>
+        <p class="muted">Pesan dari backend:</p>
+        <p class="msg">{{ msg|default:"Hello, TEMAN-TEMAN TERSAYANG DARI AFGAN & FRIENDs ;) This is the polls index page." }}</p>
+        <div class="actions">
+          <button id="confettiBtn" class="btn primary">Lempar Konfeti 🎉</button>
+          <button id="counterBtn" class="btn">Klik Aku <span class="badge" id="counter">0</span></button>
+          <a class="btn outline" href="https://www.djangoproject.com/" target="_blank" rel="noreferrer">Belajar Django ↗</a>
+        </div>
+        <canvas id="confetti"></canvas>
+      </section>
+
+      <section class="grid">
+        <div class="card mini">
+          <h3>Dark/Light</h3>
+          <p>FOLDER 1</p>
+        </div>
+        <div class="card mini">
+          <h3>Konfeti</h3>
+          <p>Partikel dibuat di <code>&lt;canvas&gt;</code> dengan performa mulus.</p>
+        </div>
+        <div class="card mini">
+          <h3>APA INI</h3>
+          <p>Murni HTML, CSS, dan JS. Siap dicollectstatic.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="container footer">
+      <p>© <span id="year"></span> Kelompok 5 • Dibuat dengan semangat ☕</p>
+    </footer>
+  </div>
+
+  <script defer src="{% static 'js/app.js' %}"></script>
+</body>
+</html>

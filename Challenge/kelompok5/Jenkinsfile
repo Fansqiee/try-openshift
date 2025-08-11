@@ -1,100 +1,105 @@
-// --- letakkan di luar 'pipeline { }' ---
-def CLUSTERS = [
-  [name: 'AFFAN',   tokenId: 'OC_LOGIN_TOKEN', serverId: 'OC_SERVER_AFFAN'],
-  [name: 'AZA',     tokenId: 'OC_AZA',         serverId: 'OC_SERVER_AZA'],
-  [name: 'WINANDA', tokenId: 'OC_WINANDA',     serverId: 'OC_SERVER_WINANDA'],
-  [name: 'HELMI',   tokenId: 'OC_HELMI',       serverId: 'OC_SERVER_HELMI'],
-  [name: 'NIFE',    tokenId: 'OC_NIFE',        serverId: 'OC_SERVER_NIFE']
-]
-def routes = [:]
-// --- end ---
-
 pipeline {
-  agent any
+    agent any
 
-  environment {
-    DOCKER_IMAGE  = "megumismine/kelompok5-django:${BUILD_NUMBER}"
-    PROJECT_DIR   = 'Challenge/kelompok5'
-    MANIFEST_FILE = '.deployment/kelompok5-django.yml'
-  }
-
-  stages {
-    stage('Clone Repository') {
-      steps {
-        git branch: 'main', url: 'https://github.com/Fansqiee/try-openshift.git'
-      }
+    environment {
+        DOCKER_IMAGE = "megumismine/kelompok5-django:${BUILD_NUMBER}"
+        PROJECT_DIR = 'Challenge/kelompok5'
+        MANIFEST_FILE = '.deployment/kelompok5-django.yml'
+        
     }
-
-    stage('Build Docker Image') {
-      steps {
-        dir("${PROJECT_DIR}") {
-          sh "docker build -t ${DOCKER_IMAGE} ."
-        }
-      }
-    }
-
-    stage('Push Docker Image Docker Hub') {
-      steps {
-        withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDS', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-          sh """
-            echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
-            docker push ${DOCKER_IMAGE}
-            docker logout
-          """
-        }
-      }
-    }
-
-    stage('Update Manifest YAML') {
-      steps {
-        dir("${PROJECT_DIR}") {
-          script {
-            def manifestContent = readFile(env.MANIFEST_FILE)
-            manifestContent = manifestContent.replaceAll(/image:\s+.*/, "image: ${DOCKER_IMAGE}")
-            writeFile(file: env.MANIFEST_FILE, text: manifestContent)
-          }
-        }
-      }
-    }
-
-    stage('Apply ke OpenShift (all clusters)') {
-      steps {
-        dir("${PROJECT_DIR}") {
-          script {
-            CLUSTERS.each { cluster ->
-              withCredentials([
-                string(credentialsId: cluster.tokenId,  variable: 'OC_TOKEN'),
-                string(credentialsId: cluster.serverId, variable: 'OC_SERVER')
-              ]) {
-                // login & apply
-                sh """
-                  oc login --token="$OC_TOKEN" --server="$OC_SERVER" --insecure-skip-tls-verify=true
-                  oc apply -f ${env.MANIFEST_FILE}
-                """
-
-                // ambil route
-                def routeHost = sh(
-                  script: "oc get route django -o jsonpath='{.spec.host}'",
-                  returnStdout: true
-                ).trim()
-
-                routes[cluster.name] = routeHost
-              }
+    
+    stages {
+        
+        stage ('Clone Repository') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Fansqiee/try-openshift.git'
             }
-
-            echo "Routes: ${routes}"
-          }
         }
-      }
-    }
-  }
+        
+        stage ('Build Docker Image') {
+            steps {
+                dir ("${PROJECT_DIR}") {
+                    sh "docker build -t ${DOCKER_IMAGE} ."
+                }
+            }
+        }
+        
+        stage ('Push Docker Image Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDS', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]){
+                    sh """
+                    echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
+                    docker push ${DOCKER_IMAGE}
+                    docker logout
+                    """
+                }
+            }
+        }
+        
+        stage ('Update Manifest YAML') {
+            steps {
+                dir ("${PROJECT_DIR}") {
+                    script {
+                        def manifestContent = readFile(env.MANIFEST_FILE)
 
-  post {
-    success {
-      echo 'Application deployed successfully! ✅'
+                        // Replace the image tag in the manifest
+                        manifestContent = manifestContent.replaceAll(/image: .*/, "image: ${DOCKER_IMAGE}")
+
+                        // Write the updated content back to the file
+                        writeFile(file: env.MANIFEST_FILE, text: manifestContent)
+                    }
+                }
+            }
+        }
+
+        stage ('Apply ke OpenShift to all'){
+            steps {
+                dir ("${PROJECT_DIR}") {
+                    script {
+                        def clusters = [
+                            [tokenId: 'OC_LOGIN_TOKEN', server: 'OC_SERVER_AFFAN']
+                            [tokenId: 'OC_AZA', server: 'OC_SERVER_AZA']
+                            [tokenId: 'OC_WINANDA', server: 'OC_SERVER_WINANDA']
+                            [tokenId: 'OC_HELMI', server: 'OC_SERVER_HELMI']
+                            [tokenId: 'OC_NIFE', server: 'OC_SERVER_NIFE']
+                            ]
+                        def previousManifests = [:]
+                        def deployedRoutes = [:]
+                        try{
+                            clusters.each { c ->
+                                withCredentials([string(credentialsId: c.tokenId, variable: 'OC_TOKEN')]){
+                                    sh """
+                                    oc login --token=$OC_TOKEN --server={c.server}
+                                    oc apply -f ${env.MANIFEST_FILE}
+                                    oc rollout status deployment/django --timeout=120s
+
+                                    def rh = sh(script: "oc get route django -o jsonpath='{.spec.host}' || true", returnStdout: true).trim()
+                                    deployedRoutes[c.name] = rh ?: ""
+                                    """
+                            }
+                        } catch (err) {
+
+                        }
+                        
+
+                        def routeHost = sh(
+                            script: "oc get route django -o jsonpath='{.spec.host}'",
+                            returnStdout: true
+                        ).trim()
+                        routes[cluster.name] = routeHost
+                        }
+                    }
+                }
+            }
+        }
     }
-    failure {
-      echo 'Deployment failed. Please check the logs. ❌'
+    
+    post {
+        success {
+            echo 'Application deployed successfully! ✅'
+        }
+        failure {
+            echo 'Deployment failed. Please check the logs. ❌'
+        }
     }
-  }
 }

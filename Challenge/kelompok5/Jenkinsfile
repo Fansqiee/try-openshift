@@ -51,14 +51,21 @@ pipeline {
                 }
             }
         }
+        def clusters = [
+            [tokenId: 'OC_LOGIN_TOKEN', server: 'OC_SERVER_AFFAN']
+            [tokenId: 'OC_AZA', server: 'OC_SERVER_AZA']
+            [tokenId: 'OC_WINANDA', server: 'OC_SERVER_WINANDA']
+            [tokenId: 'OC_HELMI', server: 'OC_SERVER_HELMI']
+            [tokenId: 'OC_NIFE', server: 'OC_SERVER_NIFE']
+        ]
 
-        stage ('Apply ke OpenShift'){
+        stage ('Apply ke OpenShift to all'){
             steps {
                 dir ("${PROJECT_DIR}") {
                     script {
-                    withCredentials([string(credentialsId: 'OC_LOGIN_TOKEN', variable: 'OC_TOKEN')]){
+                    withCredentials([string(credentialsId: clusters.tokenId, variable: 'OC_TOKEN')]){
                         sh """
-                        oc login --token=$OC_TOKEN --server=https://api.rm1.0a51.p1.openshiftapps.com:6443
+                        oc login --token=$OC_TOKEN --server={cluster.server}
                         oc apply -f ${env.MANIFEST_FILE}
                         oc get route django
                         """

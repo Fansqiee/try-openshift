@@ -5,7 +5,13 @@ pipeline {
         DOCKER_IMAGE = "megumismine/kelompok5-django:${BUILD_NUMBER}"
         PROJECT_DIR = 'Challenge/kelompok5'
         MANIFEST_FILE = '.deployment/kelompok5-django.yml'
-        
+        def clusters = [
+                            [tokenId: 'OC_LOGIN_TOKEN', server: 'OC_SERVER_AFFAN']
+                            [tokenId: 'OC_AZA', server: 'OC_SERVER_AZA']
+                            [tokenId: 'OC_WINANDA', server: 'OC_SERVER_WINANDA']
+                            [tokenId: 'OC_HELMI', server: 'OC_SERVER_HELMI']
+                            [tokenId: 'OC_NIFE', server: 'OC_SERVER_NIFE']
+                            ]
     }
     
     stages {
@@ -56,13 +62,6 @@ pipeline {
             steps {
                 dir ("${PROJECT_DIR}") {
                     script {
-                        def clusters = [
-                            [tokenId: 'OC_LOGIN_TOKEN', server: 'OC_SERVER_AFFAN']
-                            [tokenId: 'OC_AZA', server: 'OC_SERVER_AZA']
-                            [tokenId: 'OC_WINANDA', server: 'OC_SERVER_WINANDA']
-                            [tokenId: 'OC_HELMI', server: 'OC_SERVER_HELMI']
-                            [tokenId: 'OC_NIFE', server: 'OC_SERVER_NIFE']
-                            ]
                         def previousManifests = [:]
                         def deployedRoutes = [:]
                         try{
@@ -78,7 +77,9 @@ pipeline {
                                     """
                             }
                         } catch (err) {
-
+                            echo "Error durig deploy : ${err}"
+                            clusters.each { c ->
+                            withCredentials}
                         }
                         
 

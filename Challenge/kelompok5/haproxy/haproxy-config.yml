@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: haproxy-config
+data:
+  haproxy.cfg: |
+    global
+      log stdout format raw local0
+
+    defaults
+      log     global
+      mode    http
+      option  httplog
+      timeout connect 5s
+      timeout client  50s
+      timeout server  50s
+
+    frontend http_front
+      bind *:8080
+      default_backend web_backends
+
+    backend web_backends
+      balance roundrobin
+      # HAPUS baris http-request set-header dari sini
+      
+      # Gunakan URL publik dengan port 443 dan opsi ssl
+      # 'verify none' digunakan untuk mengabaikan verifikasi sertifikat, 
+      # yang seringkali diperlukan saat menghubungkan environment development.
+      server hb1 django-megumismine-dev.apps.rm1.0a51.p1.openshiftapps.com:443 ssl verify none check
+      server hb2 django-muchaquila-dev.apps.rm3.7wse.p1.openshiftapps.com:443 ssl verify none check
+      server hb3 django-winandagreaceas-dev.apps.rm1.0a51.p1.openshiftapps.com:443 ssl verify none check
+      server hb4 django-helmiadamy-dev.apps.rm3.7wse.p1.openshiftapps.com:443 ssl verify none check
+      server hb5 django-nifesriantozebua-dev.apps.rm1.0a51.p1.openshiftapps.com:443 ssl verify none check
